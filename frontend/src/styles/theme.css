@@ -120,3 +120,14 @@ h1 {
 .nav-links a:hover {
   color: var(--text);
 }
+
+.nav-links a {
+  margin-left: 20px;
+  color: #9ca3af;
+  text-decoration: none;
+}
+
+.nav-links a.active {
+  color: white;
+  font-weight: 600;
+}

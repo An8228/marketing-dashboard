@@ -5,6 +5,8 @@
     "build": "vite build",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
+  },
+  "dependencies": {
+    "react-router-dom": "^7.12.0"
   }
 }
-
