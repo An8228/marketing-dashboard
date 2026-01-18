@@ -1,4 +1,4 @@
-import { Dashboard } from "./pages/Dashboard";
+import Dashboard from "./pages/Dashboard";
 import Navbar from "./components/Navbar";
 import "./styles/theme.css";
 

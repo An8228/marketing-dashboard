@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import KpiCard from "../components/KpiCard";
-import { fetchAnalyticsSummary } from "../api/analytics";
-
 import RecommendationCard from "../components/RecommendationCard";
-import { fetchRecommendations } from "../api/analytics";
+import {
+  fetchAnalyticsSummary,
+  fetchRecommendations,
+} from "../api/analytics";
 
+/* ---------------- TYPES ---------------- */
 
 type AnalyticsSummary = {
   total_campaigns: number;
@@ -13,58 +15,97 @@ type AnalyticsSummary = {
   roi: number;
 };
 
+type Recommendation = {
+  id: string;
+  title: string;
+  description: string;
+};
 
+/* ---------------- COMPONENT ---------------- */
 
 export default function Dashboard() {
   const [data, setData] = useState<AnalyticsSummary | null>(null);
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [recommendations, setRecommendations] = useState<
-  { title: string; reason: string }[]
->([]);
-
 
   useEffect(() => {
-  fetchAnalyticsSummary()
-    .then(setData)
-    .catch(() => setError("Failed to load analytics"))
-    .finally(() => setLoading(false));
+    Promise.all([
+      fetchAnalyticsSummary(),
+      fetchRecommendations(),
+    ])
+      .then(([summary, recs]) => {
+        setData(summary);
+        setRecommendations(recs);
+      })
+      .catch(() => setError("Failed to load dashboard data"))
+      .finally(() => setLoading(false));
+  }, []);
 
-  fetchRecommendations()
-    .then(setRecommendations)
-    .catch(() => {});
-}, []);
+  /* ---------------- STATES ---------------- */
 
   if (loading) {
+    return (
+      <>
+        <h1>Key Metrics</h1>
+        <div className="kpi-grid">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="kpi-card skeleton" />
+          ))}
+        </div>
+      </>
+    );
+  }
+
+  if (error || !data) {
+    return <p className="error">{error}</p>;
+  }
+
+  /* ---------------- UI ---------------- */
+
   return (
     <>
+      {/* ===== KPIs ===== */}
       <h1>Key Metrics</h1>
-      <div className="kpi-grid">
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="kpi-card skeleton" />
-        ))}
-      </div>
-    </>
-  );
-}
-
-  if (error) return <p>{error}</p>;
-  if (!data) return null;
-
-  return (
-    <>
-      <h1>Key Metrics</h1>
-
       <div className="kpi-grid">
         <KpiCard title="Total Campaigns" value={data.total_campaigns} />
-        <KpiCard title="Total Spend" value={`$${data.total_spend}`} subtitle="This Month" />
-        <KpiCard title="Total Revenue" value={`$${data.total_revenue}`} subtitle="This Month" />
-        <KpiCard title="ROI" value={`${data.roi}%`} subtitle="This Month" />
+        <KpiCard
+          title="Total Spend"
+          value={`$${data.total_spend}`}
+          subtitle="This Month"
+        />
+        <KpiCard
+          title="Total Revenue"
+          value={`$${data.total_revenue}`}
+          subtitle="This Month"
+        />
+        <KpiCard
+          title="ROI"
+          value={`${data.roi}%`}
+          subtitle="This Month"
+        />
+      </div>
+
+      {/* ===== RECOMMENDATIONS ===== */}
+      <h2>Recommendations</h2>
+      <div className="recommendations-grid">
+        {recommendations.map((rec) => (
+          <RecommendationCard
+            key={rec.id}
+            title={rec.title}
+            description={rec.description}
+          />
+        ))}
+      </div>
+
+      {/* ===== STEP 5: PERFORMANCE INSIGHTS ===== */}
+      <h2>Performance Insights</h2>
+      <div className="insights-placeholder">
+        <p>
+          Advanced charts, trend analysis, and AI-driven insights will appear
+          here in the next phase.
+        </p>
       </div>
     </>
-    
-
   );
-
 }
-

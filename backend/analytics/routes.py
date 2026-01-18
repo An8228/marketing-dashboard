@@ -52,3 +52,20 @@ def get_campaign_analytics(
         )
 
     return {"campaigns": safe_metrics}
+
+@router.get("/recommendations")
+def get_recommendations(current_user=Depends(get_current_user)):
+    return [
+        {
+            "title": "Increase budget on Campaign Alpha",
+            "reason": "High CTR (4.8%) and strong conversions this week"
+        },
+        {
+            "title": "Pause Campaign Delta",
+            "reason": "Low engagement and rising cost per click"
+        },
+        {
+            "title": "Expand Audience Segment B",
+            "reason": "Audience shows 30% higher conversion rate"
+        }
+    ]
