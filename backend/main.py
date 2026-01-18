@@ -6,6 +6,9 @@ from backend.auth.auth_router import router as auth_router
 from fastapi import Depends
 from backend.auth.dependencies import get_current_user, require_role
 
+from backend.analytics.routes import router as analytics_router
+
+
 
 # Create FastAPI app
 app = FastAPI(title="Marketing Dashboard API")
@@ -14,6 +17,7 @@ app = FastAPI(title="Marketing Dashboard API")
 Base.metadata.create_all(bind=engine)
 
 # Include routers
+app.include_router(analytics_router)
 app.include_router(auth_router)
 
 
